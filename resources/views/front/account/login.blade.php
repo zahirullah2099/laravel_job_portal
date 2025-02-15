@@ -4,8 +4,8 @@
     <div class="container my-5">
         <div class="py-lg-2">&nbsp;</div>
         <div class="row d-flex justify-content-center">
-            <div class="col-md-5">
-              @include('front.message')
+            <div class="col-md-5"> 
+                @include('front.layouts.message')
 
                 <div class="card shadow border-0 p-5">
                     <h1 class="h3">Login</h1>

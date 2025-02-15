@@ -4,6 +4,7 @@ namespace Database\Seeders;
  
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Category;
+use App\Models\Job;
 use App\Models\jobType;
 use Illuminate\Database\Seeder;
 
@@ -14,7 +15,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     { 
-        Category::factory(5)->create();
-        jobType::factory(5)->create();
+        // Category::factory(5)->create();
+        // jobType::factory(5)->create();
+
+        Job::factory()->count(15)->create();
     }
 }
