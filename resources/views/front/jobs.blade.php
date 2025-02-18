@@ -40,7 +40,7 @@
                                         @endforeach
                                     @endif
                                 </select>
-                            </div>
+                            </div> 
 
                             <div class="mb-4">
                                 <h2>Job Type</h2>
