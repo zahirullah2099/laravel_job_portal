@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Job;
 use App\Models\jobType;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\CssSelector\Node\FunctionNode;
 
 class JobsController
@@ -56,5 +57,35 @@ class JobsController
             'jobs' => $jobs,
             'jobTypeArray' => $jobTypeArray
         ]);
+    }
+
+    // Job detail page
+    public function detail($id){
+        $job = Job::where(['id' => $id, 'status' => 1])->with(['jobType', 'category'])->first();
+        if($job == null){
+            abort(404);
+        }
+       return view('front.jobDetail', ['job' => $job]);
+    }
+
+    // apply for job
+    public function applyJob(Request $request){
+        $id = $request->id;
+        $job = Job::where('id',$id)->first();
+        if($job == null){
+            session()->flash('error', 'Job does not exist');
+            return response()->json([
+                'status' => false,
+                'message' => 'Job does not exist'
+            ]);
+        }
+        $employer_id = $job->user_id;  
+        if($employer_id == Auth::id()){
+            session()->flash('error', 'you cannot apply on your own job');
+            return response()->json([
+                'status' => false,
+                'message' => 'you cannot apply on your own job'
+            ]);
+        }
     }
 }

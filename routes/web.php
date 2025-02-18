@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home'); 
 Route::get('/jobs', [JobsController::class, 'index'])->name('jobs'); 
+Route::get('/job/detail/{id}', [JobsController::class, 'detail'])->name('jobDetail'); 
+Route::get('/apply-job', [JobsController::class, 'applyJob'])->name('applyJob'); 
+
+
+
 Route::group(['prefix' => 'account'], function(){ 
     Route::middleware(GuestMiddleware::class)->group(function(){ 
         Route::get('/register', [AccountController::class, 'registration'])->name('account.registration'); 
