@@ -2,12 +2,14 @@
 
 use App\Http\Controllers\AccountController; 
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\JobsController;
 use App\Http\Middleware\AuthMiddleware;
 use App\Http\Middleware\GuestMiddleware;
 use Illuminate\Support\Facades\Route;  
  
 
 Route::get('/', [HomeController::class, 'index'])->name('home'); 
+Route::get('/jobs', [JobsController::class, 'index'])->name('jobs'); 
 Route::group(['prefix' => 'account'], function(){ 
     Route::middleware(GuestMiddleware::class)->group(function(){ 
         Route::get('/register', [AccountController::class, 'registration'])->name('account.registration'); 
