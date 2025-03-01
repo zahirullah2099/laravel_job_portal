@@ -11,6 +11,7 @@ class HomeController
     public function index()
     {
         $categories = Category::where('status', 1)->take(8)->get(); 
+        $newCategories = Category::where('status', 1)->get(); 
         $featuredJob = Job::where([
             ['status', 1],
             ['isFeatured', 1]
@@ -27,7 +28,8 @@ class HomeController
         return view('front.home', [
             'categories' => $categories,
             'featuredJobs' => $featuredJob,
-            'latestJobs' => $latestJob
+            'latestJobs' => $latestJob,
+            'newCategories' => $newCategories
         ]);
     }
 }

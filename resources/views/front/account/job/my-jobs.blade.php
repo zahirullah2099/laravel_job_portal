@@ -49,7 +49,7 @@
                                                     <div class="info1">{{ $job->jobType->name }} . {{ $job->location }}</div>
                                                 </td>
                                                 <td>{{ \Carbon\Carbon::parse($job->created_at)->format('d M,Y') }}</td>
-                                                <td>0 Applications</td>
+                                                <td>Applications</td>
                                                 <td>
                                                     @if ($job->status == 1)
                                                     <div class="job-status text-capitalize">Active</div>
@@ -64,7 +64,7 @@
                                                             <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
                                                         </button>
                                                         <ul class="dropdown-menu dropdown-menu-end">
-                                                            <li><a class="dropdown-item" href="job-detail.html"> <i class="fa fa-eye" aria-hidden="true"></i> View</a></li>
+                                                            <li><a class="dropdown-item" href="{{ route('jobDetail', $job->id) }}"> <i class="fa fa-eye" aria-hidden="true"></i> View</a></li>
                                                             <li><a class="dropdown-item" href="{{ route('account.editJob', $job->id) }}"><i class="fa fa-edit" aria-hidden="true"></i> Edit</a></li>
                                                             <li><a class="dropdown-item" href="#" onclick="deleteJob({{ $job->id }})"><i class="fa fa-trash" aria-hidden="true"></i>Delete</a></li>
                                                         </ul>
@@ -72,6 +72,10 @@
                                                 </td>
                                             </tr>
                                             @endforeach
+                                            @else
+                                            <tr>
+                                                 <td class="text-danger text-center"><b>you dont have post any job!</b></td>
+                                            </tr>
                                         @endif 
                                     </tbody>
                                     

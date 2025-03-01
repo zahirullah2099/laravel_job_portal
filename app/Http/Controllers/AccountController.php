@@ -2,17 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Category;
 use App\Models\Job;
-use App\Models\jobType;
 use App\Models\User;
+use App\Models\jobType;
+use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Models\JobApplication;
+use function Pest\Laravel\get;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Intervention\Image\ImageManager;
+
+use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Drivers\Gd\Driver;
+use Symfony\Component\CssSelector\Node\FunctionNode;
 
 class AccountController
 {
@@ -226,8 +231,15 @@ class AccountController
     public function myJob()
     {
         $job = Job::where('user_id', Auth::id())->with('jobType')->orderBy('created_at', 'DESC')->paginate(10);
+        $employerId = Auth::id(); // Get the authenticated employer's ID
+
+        $jobApplication = JobApplication::where('employer_id', $employerId)
+                        ->select('job_id', DB::raw('COUNT(*) as total_applicants'))
+                        ->groupBy('job_id')
+                        ->get(); 
         return view('front.account.job.my-jobs', [
-            'jobs' => $job
+            'jobs' => $job,
+            'jobApplication' => $jobApplication
         ]);
     }
 
@@ -332,4 +344,96 @@ class AccountController
         Auth::logout();
         return redirect()->route('account.login');
     }
+
+    // my job applications
+    public function myJobApplications(){
+        $jobApplications = JobApplication::where('user_id',Auth::id())
+        ->with(['job','job.jobType', 'job.applications'])
+        ->paginate(10); 
+        return view('front.account.job.my-job-application',['jobApplications' => $jobApplications]); 
+    }
+
+    public function removeJobs(Request $request){ 
+        // checking the job belongs to the auth user or not
+        $jobApplication = JobApplication::where([
+                                'id' => $request->id, 
+                                'user_id' => Auth::id()])
+                                ->first(); 
+         if($jobApplication == null){
+            session()->flash('error', 'Job application not found');
+            return response()->json([
+                'status' => false,
+            ]);
+        }    
+        
+        JobApplication::find($request->id)->delete();
+        session()->flash('success', 'Job application removed successfully'); 
+        return response()->json([
+            'status' => true,
+        ]);
+    }
+   
+    //  UPDATE PASSWORD
+    // public function updatePassword(Request $request){
+    //     $validator = Validator::make($request->all(),
+    //     [
+    //         'old_password' => 'required',
+    //         'new_password' => 'required|min:6',
+    //         'confirm_password' => 'required|same:new_password',
+    //     ]);
+
+    //     if($validator->fails()){
+    //         return response()->json([
+    //             'status' => false,
+    //             'errors' => $validator->errors()
+    //         ]);
+
+    //         if(Hash::check($request->old_password, Auth::user()->password) == false){
+    //             session()->flash('error', 'Your old password is incorrect.'); 
+    //             return response()->json([
+    //                 'status' => false 
+    //             ]);
+    //         }
+
+    //         $user = User::find(Auth::user()->id);
+    //         $user->password = Hash::make($request->new_password);
+    //         $user->save(); 
+    //         session()->flash('success', 'Your password is updated successfully.'); 
+    //         return response()->json([
+    //             'status' => true 
+    //         ]);
+    //     }
+    // }
+
+    public function updatePassword(Request $request){
+        $validator = Validator::make($request->all(), [
+            'old_password' => 'required',
+            'new_password' => 'required|min:6',
+            'confirm_password' => 'required|same:new_password',
+        ]);
+    
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'errors' => $validator->errors()
+            ]);
+        }
+    
+        if (!Hash::check($request->old_password, Auth::user()->password)) {
+            return response()->json([
+                'status' => false,
+                'errors' => ['old_password' => 'Your old password is incorrect.']
+            ]);
+        }
+    
+        $user = User::find(Auth::id());
+        $user->password = Hash::make($request->new_password);
+        $user->save();
+    
+        return response()->json([
+            'status' => true,
+            'message' => 'Your password has been updated successfully.'
+        ]);
+    }
+    
 }

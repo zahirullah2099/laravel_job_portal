@@ -2,7 +2,7 @@
 <html class="no-js" lang="en_AU" />
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-	<title>CareerVibe | Find Best Jobs</title>
+	<title>CareerVibe | {{ env('APP_NAME') }}</title>
 	<meta name="description" content="" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no, maximum-scale=1, user-scalable=no" />
 	<meta name="HandheldFriendly" content="True" />
@@ -12,6 +12,9 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/css/style.css') }}" />
 	<!-- Fav Icon -->
 	<link rel="shortcut icon" type="image/x-icon" href="#" />
+	{{-- trumbowyg editor css--}}
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/ui/trumbowyg.min.css">
+
 </head>
 <body data-instant-intensity="mousedown">
 <header>
@@ -27,14 +30,17 @@
 						<a class="nav-link" aria-current="page" href="{{ route('home') }}">Home</a>
 					</li>	
 					<li class="nav-item">
-						<a class="nav-link" aria-current="page" href="jobs.html">Find Jobs</a>
+						<a class="nav-link" aria-current="page" href="{{ route('jobs') }}">Find Jobs</a>
 					</li>										
 				</ul>				
 
-				@if (Auth::check())
-				<a class="btn btn-outline-primary me-2" href="{{ route('account.profile') }}" type="submit">Account</a>
-				@else
+				@if (!Auth::check()) 
 				<a class="btn btn-outline-primary me-2" href="{{ route('account.login') }}" type="submit">Login</a>
+				@else
+				@if (Auth::user()->role == 'admin')
+				<a class="btn btn-outline-primary me-2" href="{{ route('admin.dashboard') }}" type="submit">Admin</a>
+				@endif
+				<a class="btn btn-outline-primary me-2" href="{{ route('account.profile') }}" type="submit">Account</a>
 				@endif
 				
 				<a class="btn btn-primary" href="{{ route('account.createJob') }}" type="submit">Post a Job</a>
@@ -82,7 +88,12 @@
 <script src="{{ asset('assets/js/instantpages.5.1.0.min.js') }}"></script>
 <script src="{{ asset('assets/js/lazyload.17.6.0.min.js') }}"></script> 
 <script src="{{ asset('assets/js/custom.js') }}"></script>
+{{-- trumbowyg editor --}}
+<!-- Import jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/trumbowyg.min.js"></script>
+
 <script>
+	$('.textarea').trumbowyg();
     $.ajaxSetup({
     headers: {
         'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
