@@ -21,6 +21,9 @@ Route::group(['prefix' => 'admin'], function(){
     Route::middleware(checkAdmin::class)->group(function(){
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard'); 
         Route::get('/users', [UserController::class, 'index'])->name('admin.users'); 
+        Route::get('/users/{id}', [UserController::class, 'edit'])->name('admin.users.edit'); 
+        Route::put('/users/{id}', [UserController::class, 'update'])->name('admin.users.update'); 
+        Route::delete('/users/{id}', [UserController::class, 'destroy'])->name('admin.users.destroy'); 
     });
 
 });

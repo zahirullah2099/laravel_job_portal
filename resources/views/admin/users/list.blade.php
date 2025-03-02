@@ -22,8 +22,8 @@
                         <div class="d-flex justify-content-between">
                             <div>
                                 <h3 class="fs-4 mb-1">Users</h3>
-                            </div> 
-                            
+                            </div>
+
                         </div>
                         <div class="table-responsive table-striped">
                             <table class="table text-center">
@@ -39,34 +39,41 @@
                                 <tbody>
                                     @if ($users->isNotEmpty())
                                         @foreach ($users as $user)
-                                        <tr class="active" id="job_{{ $user->id }}">
-                                            <td>{{ $user->id }}</td>
-                                            <td>{{ $user->name }}</td>
-                                            <td>{{ $user->email }}</td>
-                                            <td>{{ $user->mobile }}</td> 
-                                            <td>
-                                                <div class="action-dots ">
-                                                    <button href="#" class="btn" data-bs-toggle="dropdown" aria-expanded="false">
-                                                        <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
-                                                    </button>
-                                                    <ul class="dropdown-menu dropdown-menu-end">
-                                                        <li><a class="dropdown-item" href="#"><i class="fa fa-edit" aria-hidden="true"></i> Edit</a></li>
-                                                        <li><a class="dropdown-item" href="#"><i class="fa fa-trash" aria-hidden="true"></i>Delete</a></li>
-                                                    </ul>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                            <tr class="active" id="job_{{ $user->id }}">
+                                                <td>{{ $user->id }}</td>
+                                                <td>{{ $user->name }}</td>
+                                                <td>{{ $user->email }}</td>
+                                                <td>{{ $user->mobile }}</td>
+                                                <td>
+                                                    <div class="action-dots ">
+                                                        <button href="#" class="btn" data-bs-toggle="dropdown"
+                                                            aria-expanded="false">
+                                                            <i class="fa fa-ellipsis-v" aria-hidden="true"></i>
+                                                        </button>
+                                                        <ul class="dropdown-menu dropdown-menu-end">
+                                                            <li><a class="dropdown-item"
+                                                                    href="{{ route('admin.users.edit', $user->id) }}"><i
+                                                                        class="fa fa-edit" aria-hidden="true"></i> Edit</a>
+                                                            </li>
+                                                            <li><a class="dropdown-item" href="#"
+                                                                    onclick="deleteUser({{ $user->id }})"><i
+                                                                        class="fa fa-trash"
+                                                                        aria-hidden="true"></i>Delete</a></li>
+                                                        </ul>
+                                                    </div>
+                                                </td>
+                                            </tr>
                                         @endforeach
-                                        @else
+                                    @else
                                         <tr>
-                                             <td class="text-danger text-center"><b>you dont have post any job!</b></td>
+                                            <td class="text-danger text-center"><b>you dont have post any job!</b></td>
                                         </tr>
-                                    @endif 
+                                    @endif
                                 </tbody>
-                                
+
                             </table>
                             <div>
-                                {{ $users->links(); }}
+                                {{ $users->links() }}
                             </div>
                         </div>
                     </div>
@@ -77,5 +84,20 @@
 @endsection
 
 @section('customJs')
-     
+    <script>
+      function deleteUser(id) {
+    if (confirm('Are you sure you want to delete the user?')) {
+        $.ajax({
+            url: '{{ route("admin.users.destroy", ":id") }}'.replace(':id', id),  
+            type: 'DELETE', 
+            dataType: 'json',
+            success: function(response) {
+                window.location.reload();
+            }
+        });
+    }
+}
+
+
+    </script>
 @endsection
