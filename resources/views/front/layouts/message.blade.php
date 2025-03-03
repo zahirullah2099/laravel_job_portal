@@ -10,3 +10,13 @@
    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
  </div>
 @endif
+
+{{-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        $(".session-alert").hide().slideDown(500); // Slide down effect when showing
+        setTimeout(function () {
+            $(".session-alert").slideUp(500); // Slide up effect after 3 seconds
+        }, 3000);
+    });
+</script> --}}
