@@ -117,7 +117,9 @@
                                             </div>
                                         </div>
                                     @endforeach
-
+                                        <div class="col-md-12">
+                                            {{ $jobs->withQueryString()->links() }}
+                                        </div>
                                     @else
                                     <div class="col-md-12">
                                         <div class="card border-0 p-3 shadow mb-4">
