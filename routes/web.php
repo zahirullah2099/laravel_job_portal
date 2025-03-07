@@ -19,6 +19,10 @@ Route::get('/job/detail/{id}', [JobsController::class, 'detail'])->name('jobDeta
 Route::post('/apply-job', [JobsController::class, 'applyJob'])->name('applyJob'); 
 Route::post('/save-job', [JobsController::class, 'saveJob'])->name('saveJob'); 
 
+Route::get('/forgot-password', [AccountController::class, 'forgotPassword'])->name('account.forgotPassword');
+Route::post('/process-forgot-password', [AccountController::class, 'processForgotPassword'])->name('account.processForgotPassword');
+Route::post('/process-forgot/{token}', [AccountController::class, 'resetPassword'])->name('account.resetPassword');
+
 Route::group(['prefix' => 'admin'], function(){ 
     Route::middleware(checkAdmin::class)->group(function(){
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard'); 
@@ -59,6 +63,8 @@ Route::group(['prefix' => 'account'], function(){
         Route::get('/my-job-application', [AccountController::class, 'myJobApplications'])->name('account.myJobApplications');
         Route::post('/remove-job-application', [AccountController::class, 'removeJobs'])->name('account.removeJobs');
         Route::post('/update-password', [AccountController::class, 'updatePassword'])->name('account.updatePassword');
+        Route::get('/saved-jobs', [AccountController::class, 'savedJobs'])->name('account.savedJobs'); 
+        Route::post('/remove-savedjob', [AccountController::class, 'removeSavedjob'])->name('account.removeSavedjob');
  
     });
 });

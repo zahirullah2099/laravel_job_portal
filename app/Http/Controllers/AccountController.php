@@ -2,19 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\ResetPasswordEmail;
 use App\Models\Job;
 use App\Models\User;
 use App\Models\jobType;
 use App\Models\Category;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\JobApplication;
+use App\Models\SavedJob;
+
 use function Pest\Laravel\get;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Intervention\Image\ImageManager;
-
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Drivers\Gd\Driver;
 use Symfony\Component\CssSelector\Node\FunctionNode;
@@ -227,6 +231,36 @@ class AccountController
         }
     }
 
+    // SHOW USER SAVED JOBS
+    public function savedJobs(){ 
+        $savedJobs = SavedJob::where('user_id', Auth::id())
+        ->with(['job','job.jobType', 'job.applications'])
+        ->orderBy('created_at', 'DESC')
+        ->paginate(10);
+        return view('front.account.job.saved-jobs',
+        ['savedJobs' => $savedJobs]);  
+    }
+    // REMOVE SAVED JOB
+    public function removeSavedJob(Request $request){ 
+        // checking the job belongs to the auth user or not
+        $savedJob = SavedJob::where([
+                                'id' => $request->id, 
+                                'user_id' => Auth::id()])
+                                ->first(); 
+         if($savedJob == null){
+            session()->flash('error', 'Job not found');
+            return response()->json([
+                'status' => false,
+            ]);
+        }    
+        
+        SavedJob::find($request->id)->delete();
+        session()->flash('success', 'Job removed successfully'); 
+        return response()->json([
+            'status' => true,
+        ]);
+    }
+
     // SHOW USER JOBS
     public function myJob()
     {
@@ -349,6 +383,7 @@ class AccountController
     public function myJobApplications(){
         $jobApplications = JobApplication::where('user_id',Auth::id())
         ->with(['job','job.jobType', 'job.applications'])
+        ->orderBy('created_at', 'DESC')
         ->paginate(10); 
         return view('front.account.job.my-job-application',['jobApplications' => $jobApplications]); 
     }
@@ -434,6 +469,47 @@ class AccountController
             'status' => true,
             'message' => 'Your password has been updated successfully.'
         ]);
+    }
+
+    // forgot password page
+    public function forgotPassword(){
+        return view("front.account.forgot-password");
+    }
+
+    // process forgot password
+    public function processForgotPassword(Request $request){
+        $validator = Validator::make($request->all(),[
+            'email' => 'required|email|exists:users,email'
+        ]);
+        if($validator->fails()){
+            return redirect()->route('account.forgotPassword')
+            ->withInput()
+            ->withErrors($validator);
+        }
+
+        $token = Str::random(60);
+        // delete existing email 
+        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+        DB::table('password_reset_tokens')->insert([
+            'email' => $request->email,
+            'token' => $token,
+            'created_at' => now()
+        ]);
+
+        // fetch user data
+        $user = User::where('email', $request->email)->first();
+        $mailData = [
+            'token' => $token,
+            'user' => $user,
+            'subject' => 'You have request to change you password'
+        ];
+        Mail::to($request->email)->send(new ResetPasswordEmail($mailData));
+        return redirect()->route('account.forgotPassword')->with('success', 'Reset password email has been sent to you inbox.');
+    }
+
+    // reset password
+    public function resetPassword(){
+
     }
     
 }

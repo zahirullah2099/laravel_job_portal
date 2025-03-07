@@ -238,7 +238,7 @@
         function saveJob(id) {
             $.ajax({
                 url: '{{ route('saveJob') }}',
-                type: 'post',
+                type: 'POST',
                 data: {
                     id: id
                 },
