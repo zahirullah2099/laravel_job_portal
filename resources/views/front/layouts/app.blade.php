@@ -14,7 +14,7 @@
 	<link rel="shortcut icon" type="image/x-icon" href="#" />
 	{{-- trumbowyg editor css--}}
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/ui/trumbowyg.min.css">
-
+	@yield('customCss')
 </head>
 <body data-instant-intensity="mousedown">
 <header>
