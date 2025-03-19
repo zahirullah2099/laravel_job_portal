@@ -55,7 +55,7 @@
                                                      @endif
 
                                                  </td>
-                                                 <td>{{ \Carbon\Carbon::parse($job->created_at)->format('d M,Y') }}</td>
+                                                 <td>{{ date_formated($job->created_at) }}</td>
                                                  <td>
                                                      <div class="action-dots ">
                                                          <button href="#" class="btn" data-bs-toggle="dropdown"

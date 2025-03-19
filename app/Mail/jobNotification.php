@@ -2,8 +2,7 @@
 
 namespace App\Mail;
 
-use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Bus\Queueable; 
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -27,7 +26,7 @@ class jobNotification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Job Notification ',
+            subject: 'Job Applied Notification ',
         );
     }
 

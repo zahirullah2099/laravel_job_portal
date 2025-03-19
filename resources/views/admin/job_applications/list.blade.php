@@ -46,7 +46,7 @@
                                                 </td>
                                                 <td>{{ $jobApplication->user->name }}</td> 
                                                 <td>{{ $jobApplication->employer->name }}</td> 
-                                                <td>{{ \Carbon\Carbon::parse($jobApplication->applied_date)->format('d M,Y') }}</td>
+                                                <td>{{ date_formated($jobApplication->applied_date)}}</td>
                                                 <td>
                                                     <div class="action-dots ">
                                                         <button href="#" class="btn" data-bs-toggle="dropdown"

@@ -120,7 +120,7 @@
                                                     <td>{{ $application->user->name }}</td>
                                                     <td>{{ $application->user->email }}</td>
                                                     <td>{{ $application->user->mobile }}</td>
-                                                    <td>{{ \Carbon\Carbon::parse($application->applied_date)->format('d M, Y') }}
+                                                    <td>{{ date_formated($application->applied_date) }}
                                                     </td>
                                                 </tr>
                                             @endforeach
@@ -147,7 +147,7 @@
                             <div class="job_content pt-3">
                                 <ul>
                                     <li>Published on:
-                                        <span>{{ Carbon\Carbon::parse($job->created_at)->format('d M, Y') }}</span>
+                                        <span>{{ date_formated($job->created_at) }}</span>
                                     </li>
                                     <li>Vacancy: <span>{{ $job->vacancy }}</span></li>
 
@@ -202,8 +202,7 @@
                     },
                     dataType: 'json',
                     success: function(response) {
-                        if (response.status == true) {
-
+                        if (response.status == true) { 
                             showAlert('#successDiv', 'success', response.message);
                             // window.location.href = {{ route('account.myJobApplications') }}
                         } else {

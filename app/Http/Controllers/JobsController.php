@@ -2,18 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\jobNotification;
 use App\Models\Job;
+use App\Models\User;
 use App\Models\jobType;
 use App\Models\Category;
-use Illuminate\Http\Request;
-use App\Models\JobApplication;
 use App\Models\SavedJob;
-use App\Models\User;
-use Illuminate\Queue\Events\JobAttempted;
+use Illuminate\Http\Request;
+use App\Mail\jobNotification;
+use App\Models\JobApplication; 
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Mail;
-use Symfony\Component\CssSelector\Node\FunctionNode;
+use Illuminate\Support\Facades\Mail; 
 
 class JobsController
 {
@@ -93,8 +91,7 @@ class JobsController
     public function applyJob(Request $request)
     {
         $id = $request->id;
-        $job = Job::where('id', $id)->first();
-
+        $job = Job::where('id', $id)->first(); 
         // if job does not exist
         if ($job == null) {
             $message = 'Job does not exist';
@@ -106,7 +103,7 @@ class JobsController
         }
 
         // you cannot apply on your own job
-        $employer_id = $job->user_id;
+        $employer_id = $job->user_id; 
         if ($employer_id == Auth::id()) {
             $message = 'you cannot apply on your own job';
             session()->flash('error', $message);
@@ -136,22 +133,24 @@ class JobsController
         $jobApplication->employer_id  = $employer_id;
         $jobApplication->job_id = $id;
         $jobApplication->applied_date = now();
-        $jobApplication->save();
-        // session()->flash('success', $message);  
-        $message = 'you have successfully applied for the job';
-        return response()->json([
-            'status' => true,
-            'message' => $message
-        ]);
-
+        $jobApplication->save(); 
         // send notification email to employer
-        $employer = User::where('id', $employer_id)->first();
+        $employer = User::where('id', $employer_id)->first();  
+
         $mailData = [
             'employer' => $employer,
             'user' => Auth::user(),
             'job' => $job,
         ];
+        
         Mail::to($employer->email)->send(new jobNotification($mailData));
+
+        $message = 'you have successfully applied for the job';
+        session()->flash('success', $message);
+        return response()->json([
+            'status' => true,
+            'message' => $message,
+        ]);
     }
 
     // SAVE JOB 

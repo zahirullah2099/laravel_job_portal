@@ -48,7 +48,7 @@
                                                     <div class="job-name fw-500">{{ $job->title }}</div>
                                                     <div class="info1">{{ $job->jobType->name }} . {{ $job->location }}</div>
                                                 </td>
-                                                <td>{{ \Carbon\Carbon::parse($job->created_at)->format('d M,Y') }}</td>
+                                                <td>{{ date_formated($job->created_at) }}</td>
                                                 <td>Applications</td>
                                                 <td>
                                                     @if ($job->status == 1)

@@ -47,7 +47,7 @@
                                                         <div class="info1">{{ $jobApplication->job->jobType->name }} .
                                                             {{ $jobApplication->job->location }}</div>
                                                     </td>
-                                                    <td>{{ \Carbon\Carbon::parse($jobApplication->applied_date)->format('d M,Y') }}
+                                                    <td>{{ date_formated($jobApplication->applied_date) }}
                                                     </td>
                                                     <td>{{ $jobApplication->job->applications->count() }} Applications</td>
                                                     <td>
