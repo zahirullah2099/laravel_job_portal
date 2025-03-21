@@ -40,9 +40,18 @@
                                 </div>
                                 <div class="jobs_right">
                                     <div class="apply_now {{ $count == 1 ? 'saved-job' : '' }}" id="saveJobIcon">
-                                        <a class="heart_mark" href="javascript:void(0)"
+                                        {{-- <a class="heart_mark" disabled href="javascript:void(0)"
                                             onclick="saveJob({{ $job->id }})"> <i class="fa fa-heart-o"
-                                                aria-hidden="true"></i></a>
+                                                aria-hidden="true"></i>
+                                            </a> --}}
+                                        <a class="heart_mark {{ Auth::check() ? '' : 'disabled' }}"
+                                            href="javascript:void(0)"
+                                            onclick="{{ Auth::check() ? 'saveJob(' . $job->id . ')' : 'return false;' }}"
+                                            data-bs-toggle="tooltip" data-bs-placement="top"
+                                            title="{{ Auth::check() ? '' : 'Please login first' }}">
+                                            <i class="fa fa-heart-o" aria-hidden="true"></i>
+                                        </a>
+
                                     </div>
                                 </div>
                             </div>
@@ -202,7 +211,7 @@
                     },
                     dataType: 'json',
                     success: function(response) {
-                        if (response.status == true) { 
+                        if (response.status == true) {
                             showAlert('#successDiv', 'success', response.message);
                             // window.location.href = {{ route('account.myJobApplications') }}
                         } else {
@@ -218,7 +227,7 @@
 
         function showAlert(selector, type, message) {
 
-                    var alertHtml = `
+            var alertHtml = `
                 <div class="alert alert-${type} alert-dismissible fade show" role="alert">
                     ${message}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
