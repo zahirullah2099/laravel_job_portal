@@ -2,23 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\ResetPasswordEmail;
 use App\Models\Job;
 use App\Models\User;
 use App\Models\jobType;
 use App\Models\Category;
+use App\Models\SavedJob;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\JobApplication;
-use App\Models\SavedJob;
-
 use function Pest\Laravel\get;
+
+use App\Mail\ResetPasswordEmail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Intervention\Image\ImageManager;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 use Intervention\Image\Drivers\Gd\Driver;
 use Symfony\Component\CssSelector\Node\FunctionNode;
@@ -215,7 +216,7 @@ class AccountController
             $job->company_location = $request->company_location;
             $job->company_website = $request->website;
             $job->save();
-            session()->flash('success', 'Job created successfully');
+            session()->flash('success', 'Job created successfully'); 
             return response()->json([
                 'status' => true,
                 'errors' => []

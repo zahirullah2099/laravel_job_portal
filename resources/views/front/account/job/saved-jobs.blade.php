@@ -80,7 +80,7 @@
                                             @endforeach 
                                             @else
                                             <tr>
-                                                 <td class="text-danger text-center"><b>you dont have any applied for job!</b></td>
+                                                 <td class="text-danger text-center"><b>You haven't saved any job yet!</b></td>
                                             </tr>
                                         @endif
                                     </tbody>

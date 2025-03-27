@@ -26,7 +26,7 @@ class jobNotification extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Job Applied Notification ',
+            subject: 'Job Application Notification',
         );
     }
 

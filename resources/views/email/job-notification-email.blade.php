@@ -9,9 +9,10 @@
 <body>
     
     <h1>Hello: <span class="text-decoration-underline text-primary">{{ $mailData['employer']->name }}</span></h1>
+    <h5>Someone is applied on you job</h5>
     <p>job title:  <span class="text-decoration-underline text-primary">{{ $mailData['job']->title }}</span></p>
 
-    <p>Employee Details</p>
+    <h6>Employee Details</h6>
     <p>name: <span class="text-decoration-underline text-primary">{{ $mailData['user']->name }}</span></p>
     <p>Email: <span class="text-decoration-underline text-primary">{{ $mailData['user']->email }}</span></p>
     <p>Mobile No: <span class="text-decoration-underline text-primary">{{ $mailData['user']->mobile }}</span></p>

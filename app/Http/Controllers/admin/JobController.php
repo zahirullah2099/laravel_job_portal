@@ -7,12 +7,22 @@ use App\Models\jobType;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Validator;
 
 class JobController
 {
-    public function index(){
-        $jobs = Job::orderBy('created_at', 'DESC')->with('user','applications')->paginate(10);
+    // public function index(){
+    //     $jobs = Job::orderBy('created_at', 'DESC')->with('user','applications')->paginate(10); 
+    //     return view('admin.jobs.allJobs', [
+    //         'jobs' => $jobs
+    //     ]);
+    // }
+
+    public function index() { 
+        $jobs = Job::orderBy('created_at', 'DESC')->with('user', 'applications')->paginate(10);
+     
+    
         return view('admin.jobs.allJobs', [
             'jobs' => $jobs
         ]);
@@ -65,7 +75,7 @@ class JobController
             $job->status = $request->status;
             $job->isFeatured = (!empty($request->isFeatured))? $request->isFeatured : 0;
             $job->save();
-            session()->flash('success', 'Job updated successfully');
+            session()->flash('success', 'Job updated successfully'); 
             return response()->json([
                 'status' => true,
                 'errors' => []
@@ -92,7 +102,7 @@ class JobController
             ]);
         }
         $job->delete();
-        session()->flash('success', 'Job deleted successfully');
+        session()->flash('success', 'Job deleted successfully'); 
         return response()->json([
             'status' => true, 
         ]);
