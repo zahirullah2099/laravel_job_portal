@@ -1,11 +1,14 @@
 @extends('front.layouts.app')
 @section('main')
     <section class="section-5">
-        <div class="container my-5">
+        <div class="container my-2">
             <div class="py-lg-2">&nbsp;</div>
             <div class="row d-flex justify-content-center">
-                <div class="col-md-5">
-                    <div class="card shadow border-0 p-5">
+                <div class="col-md-6 mb-4 mb-md-0 mx-2">
+                    <img src="{{ asset('assets/images/login.jpg')}}" alt="Login Image" class="img-fluid rounded" style=" height: 400px;">
+                </div>
+                <div class="col-md-4" style="box-shadow: 0 0 20px rgba(0, 128, 0, 0.3);">
+                    <div class="card border-0 p-3" >
                         <h1 class="h3">Register</h1>
                         <form action="" name="registrationForm" id="registrationForm">
                             <div class="mb-3">
@@ -35,8 +38,8 @@
                             <button class="btn btn-primary mt-2">Register</button>
                         </form>
                     </div>
-                    <div class="mt-4 text-center">
-                        <p>Have an account? <a href="{{ route('account.login') }}">Login</a></p>
+                    <div class="mt-2 text-center">
+                        <p>Already have an account? <a href="{{ route('account.login') }}">Login</a></p>
                     </div>
                 </div>
             </div>

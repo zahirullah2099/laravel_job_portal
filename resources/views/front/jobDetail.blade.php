@@ -90,10 +90,17 @@
                                     <a href="javascript:void(0);" class="btn btn-secondary disabled">Login to Save</a>
                                 @endif
                                 @if (Auth::check())
-                                    <a href="#" onclick="applyJob({{ $job->id }})" class="btn btn-primary"
-                                        id="applyBtn">Apply</a>
+                                    {{-- <a href="#" onclick="applyJob({{ $job->id }})" class="btn btn-primary"
+                                        id="applyBtn">Apply</a> --}}
+                                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                                        data-bs-target="#applyModal{{ $job->id }}">
+                                        Apply
+                                    </button>
+                                    <a href="{{ route('chatify') }}?user={{ $job->user_id }}" class="btn btn-primary">
+                                        Message Employer
+                                    </a>
                                 @else
-                                    <a href="javascript:void(0);" class="btn btn-primary disabled">Login to Apply</a>
+                                    <a href="{{ route('account.login') }}" class="btn btn-primary">Login to Apply</a>
                                 @endif
                             </div>
                         </div>
@@ -121,6 +128,8 @@
                                             <th>Name</th>
                                             <th>Email</th>
                                             <th>Mobile</th>
+                                            <th>Resume</th>
+                                            <th>Download</th>
                                             <th>Applied Date</th>
                                         </tr>
                                         @if ($applications->isNotEmpty())
@@ -129,6 +138,12 @@
                                                     <td>{{ $application->user->name }}</td>
                                                     <td>{{ $application->user->email }}</td>
                                                     <td>{{ $application->user->mobile }}</td>
+                                                    <td>
+                                                        <a href="{{ route('employer.viewResume',$application->id) }}" class="btn btn-sm btn-success">view</a>
+                                                    </td>
+                                                    <td>
+                                                        <a href="{{ route('downloadResume',$application->id) }}" class="btn btn-sm btn-danger">Download</a>
+                                                    </td>
                                                     <td>{{ date_formated($application->applied_date) }}
                                                     </td>
                                                 </tr>
@@ -196,34 +211,68 @@
             </div>
         </div>
     </section>
+    <!-- Modal -->
+
+
+    <div class="modal fade" id="applyModal{{ $job->id }}" tabindex="-1">
+        <div class="modal-dialog">
+            <form id="resumeForm{{ $job->id }}" enctype="multipart/form-data" class="resume-form">
+
+                {{-- {{ route('apply.job') }} --}}
+                @csrf
+                <input type="hidden" name="job_id" value="{{ $job->id }}">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Apply for Job</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label>Select Resume</label>
+                        <input type="file" name="resume" id="resume" class="form-control" required>
+                        <p id="errorMsg" class="text-danger mx-3"></p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" onclick="applyJob({{ $job->id }})" class="btn btn-primary">Submit
+                            Application</button>
+                    </div>
+                    <center class="text-center mb-5">Don't have resume &nbsp; <a href="{{ route('create.Resume') }}">Create Resume</a></center>
+                </div>
+            </form>
+        </div>
+    </div>
 @endsection
 
 @section('customJs')
     <script>
         function applyJob(id) {
-            if (confirm('Are you sure you want to apply for this job?')) {
-                $.ajax({
-                    url: '{{ route('applyJob') }}',
-                    type: 'post',
-                    data: {
-                        id: id,
-                        _token: '{{ csrf_token() }}' // Ensure CSRF protection
-                    },
-                    dataType: 'json',
-                    success: function(response) {
-                        if (response.status == true) {
-                            showAlert('#successDiv', 'success', response.message);
-                            // window.location.href = {{ route('account.myJobApplications') }}
-                        } else {
-                            showAlert('#errorDiv', 'danger', response.message);
-                        }
-                    },
-                    error: function(xhr) {
-                        showAlert('#errorDiv', 'danger', 'Error applying for the job.');
+
+            // Get the form element by ID
+            let form = $('#resumeForm' + id)[0];
+            let formData = new FormData(form);
+            $.ajax({
+                url: "{{ route('applyJob') }}",
+                type: 'POST',
+                data: formData,
+                processData: false, // Important for FormData
+                contentType: false, // Important for FormData
+                success: function(response) {
+                    if (response.status === true) {
+                        $('#applyModal' + id).modal('hide');
+                        showAlert('#successDiv', 'success', response.message);
+                    } else {
+                        showAlert('#errorDiv', 'danger', response.message);
                     }
-                });
-            }
+                    $("#errorMsg").html('')
+                    $('#resumeForm{{ $job->id }}')[0].reset();
+                    $('#applyModal' + id).modal('hide');
+                },
+                error: function(xhr) {
+                    // showAlert('#errorDiv', 'danger', 'Error applying for the job.');
+                    $("#errorMsg").html('<small>please choose the correct file type</small>')
+                }
+            });
         }
+
 
         function showAlert(selector, type, message) {
 

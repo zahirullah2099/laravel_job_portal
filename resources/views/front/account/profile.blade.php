@@ -34,11 +34,24 @@
                                         class="form-control" value="{{ $user->email }}">
                                     <p></p>
                                 </div>
-                                <div class="mb-4">
+                                {{-- <div class="mb-4">
                                     <label for="" class="mb-2">Designation</label>
                                     <input type="text" placeholder="Designation" name="designation" id="designation"
                                         class="form-control" value="{{ $user->designation }}">
+                                </div> --}}
+                                <div class="mb-4">
+                                    <label for="" class="mb-2">Designation</label>
+                                    <select name="designation" id="designation" class="form-control form-select">
+                                        <option value="">Select Designation</option>
+                                        <option value="Web Developer" {{ $user->designation == 'Web Developer' ? 'selected' : '' }}>Web Developer</option>
+                                        <option value="Software Engineer" {{ $user->designation == 'Software Engineer' ? 'selected' : '' }}>Software Engineer</option>
+                                        <option value="Data Analyst" {{ $user->designation == 'Data Analyst' ? 'selected' : '' }}>Data Analyst</option>
+                                        <option value="UI/UX Designer" {{ $user->designation == 'UI/UX Designer' ? 'selected' : '' }}>UI/UX Designer</option>
+                                        <option value="Project Manager" {{ $user->designation == 'Project Manager' ? 'selected' : '' }}>Project Manager</option>
+                                        {{-- Add more as needed --}}
+                                    </select>
                                 </div>
+                                
                                 <div class="mb-4">
                                     <label for="" class="mb-2">Mobile</label>
                                     <input type="text" placeholder="Mobile" name="mobile" id="mobile"

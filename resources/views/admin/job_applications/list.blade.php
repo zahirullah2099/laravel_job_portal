@@ -26,11 +26,11 @@
 
                         </div>
                         <div class="table-responsive table-striped">
-                            <table class="table text-center">
+                            <table class="table text-center ">
                                 <thead class="bg-light">
                                     <tr> 
-                                        <th scope="col">Title</th>
-                                        <th scope="col">User</th>
+                                        <th scope="col">Job</th>
+                                        <th scope="col">Applied By</th>
                                         <th scope="col">Employer</th>
                                         <th scope="col">Applied Date</th>
                                         <th scope="col">Action</th>

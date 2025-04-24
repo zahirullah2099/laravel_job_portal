@@ -20,16 +20,25 @@ class JobApplicationController
     public function destroy(Request $request){
         $id = $request->id;
         $jobApplication = JobApplication::find($id);
-        if($jobApplication == null){
+    
+        if ($jobApplication == null) {
             session()->flash('error', 'Either job application deleted or not found');
-            return response()->json([
-                'status' => false, 
-            ]);
+            return response()->json(['status' => false]);
         }
+    
+        // Get the resume file path
+        $resumePath = public_path('resumes/' . $jobApplication->resume);
+    
+        // Delete the resume file if it exists
+        if (file_exists($resumePath)) {
+            unlink($resumePath);
+        }
+    
+        // Delete the job application record
         $jobApplication->delete();
+    
         session()->flash('success', 'Job application deleted successfully');
-        return response()->json([
-            'status' => true, 
-        ]);
+        return response()->json(['status' => true]);
     }
+    
 }

@@ -49,12 +49,15 @@
                                                     <div class="info1">{{ $job->jobType->name }} . {{ $job->location }}</div>
                                                 </td>
                                                 <td>{{ date_formated($job->created_at) }}</td>
-                                                <td>Applications</td>
+                                                <td>
+                                                    {{ optional($jobApplication->firstWhere('job_id', $job->id))->total_applicants ?? 0 }} Applications
+                                                </td>
+                                                
                                                 <td>
                                                     @if ($job->status == 1)
-                                                    <div class="job-status text-capitalize">Active</div>
+                                                    <div class="job-status text-capitalize bg-success text-white rounded text-center">Active</div>
                                                     @else
-                                                    <div class="job-status text-capitalize">Block</div>
+                                                    <div class="job-status text-capitalize bg-danger text-white rounded text-center">Block</div>
                                                     @endif
                                                   
                                                 </td>
