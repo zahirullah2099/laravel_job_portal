@@ -20,11 +20,12 @@ class JobController
     // }
 
     public function index() { 
-        $jobs = Job::orderBy('created_at', 'DESC')->with('user', 'applications')->paginate(10);
-     
+        $jobs = Job::orderBy('created_at', 'DESC')->with('user', 'applications')->paginate(8);
+        $expiredJobs = Job::where('expiry_date', '<', now())->count();
     
         return view('admin.jobs.allJobs', [
-            'jobs' => $jobs
+            'jobs' => $jobs,
+            'expiredJobs' => $expiredJobs
         ]);
     }
 
@@ -62,6 +63,7 @@ class JobController
             $job->job_type_id = $request->jobType;
             $job->vacancy = $request->vacancy;
             $job->salary = $request->salary;
+            $job->expiry_date = $request->expiry_date;
             $job->location = $request->location;
             $job->description = $request->description;
             $job->benefits = $request->benefits;
@@ -105,6 +107,14 @@ class JobController
         session()->flash('success', 'Job deleted successfully'); 
         return response()->json([
             'status' => true, 
+        ]);
+    }
+
+    // show all expired jobs
+    public function expiredJobs(){
+        $expiredJobs = Job::where('expiry_date', '<', now())->orderBy('created_at', 'DESC')->with('user','applications')->paginate(5);
+        return view('admin.jobs.expiredJobs', [
+            'expiredJobs' => $expiredJobs
         ]);
     }
 }

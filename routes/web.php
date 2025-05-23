@@ -41,6 +41,7 @@ Route::group(['prefix' => 'admin'], function () {
         Route::get('/jobs/edit/{id}', [JobController::class, 'edit'])->name('admin.jobs.edit');
         Route::put('/jobs/{id}', [JobController::class, 'update'])->name('admin.jobs.update');
         Route::delete('/jobs', [JobController::class, 'destroy'])->name('admin.jobs.destroy');
+        Route::get('/expired-jobs', [JobController::class, 'expiredJobs'])->name('admin.expiredJobs');
         Route::get('/job-applications', [JobApplicationController::class, 'index'])->name('admin.jobApplications');
         Route::delete('/job-applications', [JobApplicationController::class, 'destroy'])->name('admin.jobApplications.destroy');
     });

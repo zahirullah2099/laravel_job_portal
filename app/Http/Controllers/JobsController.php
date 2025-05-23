@@ -20,7 +20,7 @@ class JobsController
         $categoires = Category::where('status', 1)->get();
         $jobTypes = jobType::where('status', 1)->get();
 
-        $jobs = Job::where('status', 1);
+        $jobs = Job::where('expiry_date', '>=', now())->where('status', 1);
         // Search using keyword
         if (!empty($request->keyword)) {
             $jobs = $jobs->where(function ($query) use ($request) {

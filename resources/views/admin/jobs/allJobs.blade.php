@@ -18,13 +18,22 @@
                  </div>
                  <div class="col-lg-9">
                      @include('front.layouts.message')
-                     <div class="card-body card-form shadow">
-                         <div class="d-flex justify-content-between">
-                             <div>
-                                 <h3 class="fs-4 mb-1">Jobs</h3>
-                             </div>
+                     <div class="card-body card-form shadow-lg rounded" style="border: 1px solid #c2f3ab">
+                         <div class="d-flex justify-content-between align-items-center mb-2">
+                             <h3 class="fs-4 mb-1">Jobs</h3>
 
+                             @if ($expiredJobs > 0)
+                                 <div class="alert alert-danger mb-0 py-2 px-3 d-flex align-items-center">
+                                     <div class="me-3">
+                                         <strong>{{ $expiredJobs }}</strong> job(s) have expired.
+                                     </div>
+                                     <a href="{{ route('admin.expiredJobs') }}" class="btn btn-sm btn-light">
+                                         View Expired Jobs
+                                     </a>
+                                 </div>
+                             @endif
                          </div>
+
                          <div class="table-responsive table-striped">
                              <table class="table text-center">
                                  <thead class="bg-light">
@@ -44,7 +53,7 @@
                                                  <td>{{ $job->id }}</td>
                                                  <td>
                                                      <p>{{ $job->title }}</p>
-                                                     <p>Applications{{ $job->applications->count() }}</p>
+                                                     <p><strong>{{ $job->applications->count() }}</strong> Applicants</p>
                                                  </td>
                                                  <td>{{ $job->user->name }}</td>
                                                  <td>
@@ -100,13 +109,13 @@
  @section('customJs')
      <script>
          $(document).on('click', '.delete-job', function() {
-            let jobId = $(this).data('id'); 
+             let jobId = $(this).data('id');
              if (confirm('Are you sure you want to delete the job?')) {
                  $.ajax({
-                     url: '{{ route("admin.jobs.destroy") }}',
+                     url: '{{ route('admin.jobs.destroy') }}',
                      type: 'DELETE',
                      data: {
-                        id : jobId
+                         id: jobId
                      },
                      dataType: 'json',
                      success: function(response) {

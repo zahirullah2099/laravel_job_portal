@@ -173,6 +173,9 @@
                                     <li>Published on:
                                         <span>{{ date_formated($job->created_at) }}</span>
                                     </li>
+                                    <li>Expired on:
+                                        <span>{{ date_formated($job->expiry_date) }}</span>
+                                    </li>
                                     <li>Vacancy: <span>{{ $job->vacancy }}</span></li>
 
 

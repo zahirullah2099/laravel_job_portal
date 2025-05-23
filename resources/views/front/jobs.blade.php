@@ -98,6 +98,10 @@
                                                             <span class="fw-bolder"><i class="fa fa-clock-o"></i></span>
                                                             <span class="ps-1">{{ $job->jobType->name }}</span>
                                                         </p> 
+                                                        <p class="mb-0">
+                                                            <span class="fw-bolder"><i class="fa fa-clock-o"></i></span>
+                                                            <span class="ps-1">{{ $job->expiry_date }}</span>
+                                                        </p> 
                                                         {{-- <p><b>Keywords:</b> {{ $job->keywords }}</p> 
                                                         <p><b>Category:</b> {{ $job->category->name }}</p> 
                                                         <p><b>Experience:</b> {{ $job->experience }} years</p>  --}}

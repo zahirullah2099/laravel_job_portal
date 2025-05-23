@@ -617,7 +617,7 @@ progress {
   vertical-align: inherit;
 }
 .table > thead {
-  vertical-align: bottom;
+  vertical-align: bottom; 
 }
 .table > :not(:first-child) {
   border-top: 2px solid currentColor;

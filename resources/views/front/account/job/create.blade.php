@@ -20,6 +20,7 @@
                 <div class="col-lg-9">
                     {{-- INCLUDE MESSAGES --}}
                     @include('front.layouts.message')
+                    <div id="responseMsg"></div>
                     <form action="" method="POST" id="createJobForm" name="createJobForm">
                         <div class="card border-0 shadow mb-4 ">
                             <div class="card-body card-form p-4">
@@ -69,15 +70,21 @@
                                 </div>
 
                                 <div class="row">
-                                    <div class="mb-4 col-md-6">
+                                    <div class="mb-4 col-md-4">
                                         <label for="" class="mb-2">Salary</label>
                                         <input type="text" placeholder="Salary" id="salary" name="salary"
                                             class="form-control">
                                     </div>
 
-                                    <div class="mb-4 col-md-6">
+                                    <div class="mb-4 col-md-4">
                                         <label for="" class="mb-2">Location<span class="req">*</span></label>
                                         <input type="text" placeholder="location" id="location" name="location"
+                                            class="form-control">
+                                        <p></p>
+                                    </div>
+                                    <div class="mb-4 col-md-4">
+                                        <label for="" class="mb-2">Expiry Date<span class="req">*</span></label>
+                                        <input type="date" placeholder="Expiry Date" id="expiry_date" name="expiry_date"
                                             class="form-control">
                                         <p></p>
                                     </div>
@@ -85,8 +92,7 @@
 
                                 <div class="mb-4">
                                     <label for="" class="mb-2">Description<span class="req">*</span></label>
-                                    <textarea class="textarea" name="description" id="description" cols="4" rows="5"
-                                        placeholder="Description"></textarea>
+                                    <textarea class="textarea" name="description" id="description" cols="4" rows="5" placeholder="Description"></textarea>
                                     <p></p>
                                 </div>
                                 <div class="mb-4">
@@ -142,8 +148,8 @@
 
                                     <div class="mb-4 col-md-6">
                                         <label for="" class="mb-2">Location</label>
-                                        <input type="text" placeholder="Location" id="company_location" name="company_location"
-                                            class="form-control">
+                                        <input type="text" placeholder="Location" id="company_location"
+                                            name="company_location" class="form-control">
                                     </div>
                                     <p></p>
                                 </div>
@@ -169,14 +175,15 @@
 @section('customJs')
     <script text="text/javascript">
         $("#createJobForm").on('submit', (e) => {
-            e.preventDefault(); 
+            e.preventDefault();
             $.ajax({
                 url: '{{ route('account.saveJob') }}',
                 type: 'POST',
                 dataType: 'json',
                 data: $("#createJobForm").serializeArray(),
-                success: function(response) { 
+                success: function(response) {
                     if (response.status == true) {
+
                         $("#title")
                             .removeClass('is-invalid')
                             .siblings('p')
@@ -213,7 +220,7 @@
                             .siblings('p')
                             .removeClass('invalid-feedback')
                             .html('')
-                        window.location.href ='{{ route("account.myJob") }}'; 
+                        window.location.href = '{{ route('account.myJob') }}';
                     } else {
                         var errors = response.errors;
                         if (errors.title) {

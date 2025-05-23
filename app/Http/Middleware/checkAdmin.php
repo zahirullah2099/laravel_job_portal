@@ -24,6 +24,6 @@ class checkAdmin
             session()->flash('error','You are not authorized to access this page');
             return redirect()->route('account.profile');
         }
-        return $next($request);
+        return $next($request); 
     }
 }

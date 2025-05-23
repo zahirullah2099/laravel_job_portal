@@ -70,25 +70,34 @@ class AccountController
 
 
     // AUTHENTICATE USER
-    public function authenticate(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
+   // AUTHENTICATE USER
+public function authenticate(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'email' => 'required|email',
+        'password' => 'required',
+    ]);
 
-        if ($validator->passes()) {
-            if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-                return redirect()->route('account.profile');
+    if ($validator->passes()) {
+        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            $user = Auth::user();
+            
+            // Redirect based on role
+            if ($user->role === 'admin') {
+                return redirect()->route('admin.dashboard');
             } else {
-                return redirect()->route('account.login')->with('error', 'Either email/password is incorrect');
+                return redirect()->route('account.profile');
             }
         } else {
-            return redirect()->route('account.login')
-                ->withErrors($validator)
-                ->withInput($request->only('email'));
+            return redirect()->route('account.login')->with('error', 'Either email/password is incorrect');
         }
+    } else {
+        return redirect()->route('account.login')
+            ->withErrors($validator)
+            ->withInput($request->only('email'));
     }
+}
+
 
     // SHOW USER PROFILE
     public function profile()
@@ -191,6 +200,7 @@ class AccountController
             'jobType' => 'required',
             'vacancy' => 'required|integer',
             'location' => 'required|max:50',
+            'expiry_date' => 'required|date',
             'description' => 'required',
             'company_name' => 'required|max:75|min:3',
         ];
@@ -202,6 +212,7 @@ class AccountController
             $job->title = $request->title;
             $job->category_id = $request->category;
             $job->job_type_id = $request->jobType;
+            $job->expiry_date = $request->expiry_date;
             $job->user_id = Auth::id();
             $job->vacancy = $request->vacancy;
             $job->salary = $request->salary;
@@ -216,7 +227,7 @@ class AccountController
             $job->company_location = $request->company_location;
             $job->company_website = $request->website;
             $job->save();
-            session()->flash('success', 'Job created successfully'); 
+            // session()->flash('success', 'Job created successfully'); 
             return response()->json([
                 'status' => true,
                 'errors' => []
@@ -317,6 +328,7 @@ class AccountController
             $job->category_id = $request->category;
             $job->job_type_id = $request->jobType;
             $job->user_id = Auth::id();
+            $job->expiry_date = $request->expiry_date;
             $job->vacancy = $request->vacancy;
             $job->salary = $request->salary;
             $job->location = $request->location;
