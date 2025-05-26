@@ -78,6 +78,8 @@ Route::group(['prefix' => 'account'], function () {
         Route::get('/showResume', [resumeController::class, 'showResume'])->name('show.Resume');
         Route::post('/submit-resume', [ResumeController::class, 'storeResume'])->name('resume.store');
         Route::get('/account/resume/download', [ResumeController::class, 'download'])->name('resume.download');
+        Route::post('/applicant/status', [AccountController::class, 'updateApplicantStatus'])->name('employer.applicant.status');
+
 
     });
 });

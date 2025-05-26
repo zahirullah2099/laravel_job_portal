@@ -108,56 +108,80 @@
                     {{-- <<<<<<<<<<<<<<<<<<<<<< --}}
                     @if (Auth::user())
                         @if (Auth::user()->id == $job->user_id)
-                            <div class="card shadow border-0 mt-3">
-                                <div class="job_details_header">
-                                    <div class="single_jobs white-bg d-flex justify-content-between">
-                                        <div class="jobs_left d-flex align-items-center">
+                            <div class="card shadow border-0 mt-4">
+                                <div class="card-header bg-primary text-white">
+                                    <h5 class="mb-0">Applicants</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div class="table-responsive">
+                                        <table class="table align-middle table-striped table-bordered">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Email</th>
+                                                    <th>Mobile</th>
+                                                    <th>Resume</th>
+                                                    <th>Download</th>
+                                                    <th>Status</th>
+                                                    <th>Applied Date</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if ($applications->isNotEmpty())
+                                                    @foreach ($applications as $application)
+                                                        <tr>
+                                                            <td>{{ $application->user->name }}</td>
+                                                            <td>{{ $application->user->email }}</td>
+                                                            <td>{{ $application->user->mobile }}</td>
+                                                            <td>
+                                                                <a href="{{ route('employer.viewResume', $application->id) }}"
+                                                                    class="btn btn-sm btn-outline-success">
+                                                                    View
+                                                                </a>
+                                                            </td>
+                                                            <td>
+                                                                <a href="{{ route('downloadResume', $application->id) }}"
+                                                                    class="btn btn-sm btn-outline-danger">
+                                                                    Download
+                                                                </a>
+                                                            </td>
+                                                            <td>
+                                                                <form method="POST"
+                                                                    class="d-flex align-items-center application-status-form">
+                                                                    @csrf
+                                                                    <input type="hidden" name="application_id"
+                                                                        value="{{ $application->id }}">
+                                                                    <select name="status"
+                                                                        class="form-select form-select-sm me-2 w-auto application-status"
+                                                                        data-id="{{ $application->id }}">
+                                                                        <option value="pending"
+                                                                            {{ $application->status == 'pending' ? 'selected' : '' }}>
+                                                                            Pending</option>
+                                                                        <option value="shortlisted"
+                                                                            {{ $application->status == 'shortlisted' ? 'selected' : '' }}>
+                                                                            Shortlist</option>
+                                                                        <option value="rejected"
+                                                                            {{ $application->status == 'rejected' ? 'selected' : '' }}>
+                                                                            Reject</option>
+                                                                    </select>
+                                                                </form>
 
-                                            <div class="jobs_conetent">
-                                                <h4>Applicants</h4>
-                                            </div>
-                                        </div>
-                                        <div class="jobs_right">
-
-                                        </div>
+                                                            </td>
+                                                            <td>{{ date_formated($application->applied_date) }}</td>
+                                                        </tr>
+                                                    @endforeach
+                                                @else
+                                                    <tr>
+                                                        <td colspan="7" class="text-center text-danger fw-bold">No
+                                                            Applicant Found for this Job!</td>
+                                                    </tr>
+                                                @endif
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
-                                <div class="descript_wrap white-bg">
-                                    <table class="table table-striped">
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Email</th>
-                                            <th>Mobile</th>
-                                            <th>Resume</th>
-                                            <th>Download</th>
-                                            <th>Applied Date</th>
-                                        </tr>
-                                        @if ($applications->isNotEmpty())
-                                            @foreach ($applications as $application)
-                                                <tr>
-                                                    <td>{{ $application->user->name }}</td>
-                                                    <td>{{ $application->user->email }}</td>
-                                                    <td>{{ $application->user->mobile }}</td>
-                                                    <td>
-                                                        <a href="{{ route('employer.viewResume',$application->id) }}" class="btn btn-sm btn-success">view</a>
-                                                    </td>
-                                                    <td>
-                                                        <a href="{{ route('downloadResume',$application->id) }}" class="btn btn-sm btn-danger">Download</a>
-                                                    </td>
-                                                    <td>{{ date_formated($application->applied_date) }}
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        @else
-                                            <tr>
-                                                <td colspan="3" class="text-danger fw-bold">No Applicant Found for this
-                                                    Job!</td>
-                                            </tr>
-                                        @endif
-
-                                    </table>
-                                </div>
                             </div>
+
                         @endif
                     @endif
                     {{-- <<<<<<<<<<<<<<<<<<<<<< --}}
@@ -168,6 +192,8 @@
                             <div class="summery_header pb-1 pt-4">
                                 <h3>Job Summery</h3>
                             </div>
+                            <p><i class="bi bi-eye"></i> {{ $job->views }} Views</p>
+
                             <div class="job_content pt-3">
                                 <ul>
                                     <li>Published on:
@@ -238,7 +264,8 @@
                         <button type="button" onclick="applyJob({{ $job->id }})" class="btn btn-primary">Submit
                             Application</button>
                     </div>
-                    <center class="text-center mb-5">Don't have resume &nbsp; <a href="{{ route('create.Resume') }}">Create Resume</a></center>
+                    <center class="text-center mb-5">Don't have resume &nbsp; <a
+                            href="{{ route('create.Resume') }}">Create Resume</a></center>
                 </div>
             </form>
         </div>
@@ -317,5 +344,32 @@
                 }
             });
         }
+
+        //   change applicants status into , shortlist , pending or rejected
+     // Handle dropdown change
+$(document).on('change', '.application-status', function () {
+    var status = $(this).val();
+    var applicationId = $(this).data('id'); 
+    console.log(status, applicationId)
+    $.ajax({
+        url: '{{ route("employer.applicant.status") }}',
+        method: 'POST',
+        data: { 
+            application_id: applicationId,
+            status: status
+        },
+        success: function (response) {
+            if (response.success) {
+                alert('Status updated successfully!');
+            } else {
+                alert('Failed to update status.');
+            }
+        },
+        error: function () {
+            alert('Something went wrong.');
+        }
+    });
+});
+
     </script>
 @endsection

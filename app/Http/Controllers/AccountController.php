@@ -380,6 +380,22 @@ public function authenticate(Request $request)
         ]);
     }
 
+    // change applicant status
+    public function updateApplicantStatus(Request $request)
+{
+    $application = JobApplication::find($request->application_id);
+
+    if ($application) {
+        $application->status = $request->status;
+        $application->save();
+
+        return response()->json(['success' => true]);
+    }
+
+    return response()->json(['success' => false]);
+}
+
+
 
 
 

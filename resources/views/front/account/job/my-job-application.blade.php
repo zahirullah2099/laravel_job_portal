@@ -40,7 +40,7 @@
                                     <tbody class="border-0">
                                         @if ($jobApplications->isNotEmpty())
                                             @foreach ($jobApplications as $jobApplication)
-                                            <tr class="active">
+                                                <tr class="active">
 
                                                     <td>
                                                         <div class="job-name fw-500">{{ $jobApplication->job->title }}</div>
@@ -51,13 +51,21 @@
                                                     </td>
                                                     <td>{{ $jobApplication->job->applications->count() }} Applications</td>
                                                     <td>
-                                                        @if ($jobApplication->job->status == 1)
-                                                            <div class="job-status text-capitalize">Active</div>
-                                                        @else
-                                                            <div class="job-status text-capitalize">Block</div>
-                                                        @endif
+                                                        @php
+                                                            $status = $jobApplication->status;
+                                                            $badgeClass = match ($status) {
+                                                                'rejected' => 'bg-danger',
+                                                                'pending' => 'bg-secondary',
+                                                                'shortlist' => 'bg-success',
+                                                                default => 'bg-dark',
+                                                            };
+                                                        @endphp
 
+                                                        <span class="badge text-capitalize {{ $badgeClass }}">
+                                                            {{ $status }}
+                                                        </span>
                                                     </td>
+
                                                     <td>
                                                         <div class="action-dots float-end">
                                                             <button href="#" class="btn" data-bs-toggle="dropdown"
@@ -69,20 +77,23 @@
                                                                         href="{{ route('jobDetail', $jobApplication->job_id) }}">
                                                                         <i class="fa fa-eye" aria-hidden="true"></i>
                                                                         View</a></li>
-                                                                        <li>
-                                                                            <a class="dropdown-item" href="#" onclick="event.preventDefault(); removeJob({{ $jobApplication->id }})">
-                                                                                <i class="fa fa-trash" aria-hidden="true"></i> Remove
-                                                                            </a>
-                                                                        </li>
-                                                                        
+                                                                <li>
+                                                                    <a class="dropdown-item" href="#"
+                                                                        onclick="event.preventDefault(); removeJob({{ $jobApplication->id }})">
+                                                                        <i class="fa fa-trash" aria-hidden="true"></i>
+                                                                        Remove
+                                                                    </a>
+                                                                </li>
+
                                                             </ul>
                                                         </div>
                                                     </td>
                                                 </tr>
-                                            @endforeach 
-                                            @else
+                                            @endforeach
+                                        @else
                                             <tr>
-                                                 <td class="text-danger text-center"><b>you dont have any applied for job!</b></td>
+                                                <td class="text-danger text-center"><b>you dont have any applied for
+                                                        job!</b></td>
                                             </tr>
                                         @endif
                                     </tbody>
@@ -102,24 +113,23 @@
 
 @section('customJs')
     <script text="text/javascript">
-       function removeJob(id) { 
-    if (confirm('Are you sure you want to remove this job?')) {
-        $.ajax({
-            url: '{{ route("account.removeJobs") }}', // Correct route
-            type: 'POST', // Ensure it's POST
-            data: {
-                id: id,
-                _token: '{{ csrf_token() }}' // Required for Laravel POST requests
-            },
-            dataType: 'json',
-            success: function(response) {
-                if (response.status) { 
-                    location.reload(); 
-                }  
-            } 
-        });
-    }
-}
-
+        function removeJob(id) {
+            if (confirm('Are you sure you want to remove this job?')) {
+                $.ajax({
+                    url: '{{ route('account.removeJobs') }}', // Correct route
+                    type: 'POST', // Ensure it's POST
+                    data: {
+                        id: id,
+                        _token: '{{ csrf_token() }}' // Required for Laravel POST requests
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.status) {
+                            location.reload();
+                        }
+                    }
+                });
+            }
+        }
     </script>
 @endsection
