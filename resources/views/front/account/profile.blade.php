@@ -6,7 +6,7 @@
                 <div class="col">
                     <nav aria-label="breadcrumb" class=" rounded-3 p-3 mb-4">
                         <ol class="breadcrumb mb-0">
-                            <li class="breadcrumb-item"><a href="#">Home</a></li>
+                            <li class="breadcrumb-item"><a href="{{ route('home') }}">Home</a></li>
                             <li class="breadcrumb-item active">Account Settings</li>
                         </ol>
                     </nav>
@@ -18,7 +18,7 @@
                 </div>
                 <div class="col-lg-9">
                     @include('front.layouts.message')
-                    <div class="card border-0 shadow mb-4">
+                    <div class="card shadow mb-4"  style="border: 1px solid #A8DF8E">
                         <form action="" id="userForm" name="userForm">
                             <div class="card-body  p-4">
                                 <h3 class="fs-4 mb-1">My Profile</h3>
@@ -65,7 +65,7 @@
                     </div>
 
                     {{-- PASSWORD SECTION START --}}
-                    <div class="card border-0 shadow mb-4">
+                    <div class="card shadow mb-4"  style="border: 1px solid #A8DF8E">
                         <div id="successDiv"></div>
                         <div id="errorDiv"></div>
                         <form action="" method="post" id="changePasswordForm" name="changePasswordForm">

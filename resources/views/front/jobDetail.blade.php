@@ -19,7 +19,7 @@
                     {{-- @include('front.layouts.message') --}}
                     <div id="successDiv"></div>
                     <div id="errorDiv"></div>
-                    <div class="card shadow border-0">
+                    <div class="card shadow"  style="border: 1px solid #A8DF8E">
                         <div class="job_details_header">
                             <div class="single_jobs white-bg d-flex justify-content-between">
                                 <div class="jobs_left d-flex align-items-center">
@@ -30,10 +30,10 @@
                                         </a>
                                         <div class="links_locat d-flex align-items-center">
                                             <div class="location">
-                                                <p> <i class="fa fa-map-marker"></i>{{ $job->location }}</p>
+                                                <p> <i class="fa fa-map-marker me-1"></i>{{ $job->location }}</p>
                                             </div>
                                             <div class="location">
-                                                <p> <i class="fa fa-clock-o"></i>{{ $job->jobType->name }}</p>
+                                                <p> <i class="fa fa-clock-o me-1"></i>{{ $job->jobType->name }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -96,9 +96,9 @@
                                         data-bs-target="#applyModal{{ $job->id }}">
                                         Apply
                                     </button>
-                                    <a href="{{ route('chatify') }}?user={{ $job->user_id }}" class="btn btn-primary">
+                                    {{-- <a href="{{ route('chatify') }}?user={{ $job->user_id }}" class="btn btn-primary">
                                         Message Employer
-                                    </a>
+                                    </a> --}}
                                 @else
                                     <a href="{{ route('account.login') }}" class="btn btn-primary">Login to Apply</a>
                                 @endif
@@ -107,10 +107,10 @@
                     </div>
                     {{-- <<<<<<<<<<<<<<<<<<<<<< --}}
                     @if (Auth::user())
-                        @if (Auth::user()->id == $job->user_id)
-                            <div class="card shadow border-0 mt-4">
-                                <div class="card-header bg-primary text-white">
-                                    <h5 class="mb-0">Applicants</h5>
+                        @if (Auth::user()->id === $job->user_id)
+                            <div class="card shadow mt-4" style="border: 1px solid #A8DF8E">
+                                <div class="card-header bg-primary">
+                                    <h5 class="mt-2">Applicants</h5>
                                 </div>
                                 <div class="card-body">
                                     <div class="table-responsive">
@@ -173,7 +173,7 @@
                                                 @else
                                                     <tr>
                                                         <td colspan="7" class="text-center text-danger fw-bold">No
-                                                            Applicant Found for this Job!</td>
+                                                            Applicant's Found for this Job!</td>
                                                     </tr>
                                                 @endif
                                             </tbody>
@@ -187,21 +187,27 @@
                     {{-- <<<<<<<<<<<<<<<<<<<<<< --}}
                 </div>
                 <div class="col-md-4">
-                    <div class="card shadow border-0">
+                    <div class="card shadow"  style="border: 1px solid #A8DF8E">
                         <div class="job_sumary">
                             <div class="summery_header pb-1 pt-4">
                                 <h3>Job Summery</h3>
                             </div>
-                            <p><i class="bi bi-eye"></i> {{ $job->views }} Views</p>
-
                             <div class="job_content pt-3">
                                 <ul>
                                     <li>Published on:
                                         <span>{{ date_formated($job->created_at) }}</span>
                                     </li>
-                                    <li>Expired on:
-                                        <span>{{ date_formated($job->expiry_date) }}</span>
-                                    </li>
+
+                                    @php
+                                        use Carbon\Carbon;
+                                    @endphp
+
+                                    @if (Carbon::parse($job->expiry_date)->isPast())
+                                        <li>Expired on:
+                                            <span class="badge bg-danger text-white">Expired</span>
+                                        </li>
+                                    @endif
+
                                     <li>Vacancy: <span>{{ $job->vacancy }}</span></li>
 
 
@@ -214,7 +220,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card shadow border-0 my-4">
+                    <div class="card shadow my-4"  style="border: 1px solid #A8DF8E">
                         <div class="job_sumary">
                             <div class="summery_header pb-1 pt-4">
                                 <h3>Company Details</h3>
@@ -240,9 +246,7 @@
             </div>
         </div>
     </section>
-    <!-- Modal -->
-
-
+    <!-- Modal start-->
     <div class="modal fade" id="applyModal{{ $job->id }}" tabindex="-1">
         <div class="modal-dialog">
             <form id="resumeForm{{ $job->id }}" enctype="multipart/form-data" class="resume-form">
@@ -270,6 +274,7 @@
             </form>
         </div>
     </div>
+    {{-- modal end --}}
 @endsection
 
 @section('customJs')
@@ -346,30 +351,29 @@
         }
 
         //   change applicants status into , shortlist , pending or rejected
-     // Handle dropdown change
-$(document).on('change', '.application-status', function () {
-    var status = $(this).val();
-    var applicationId = $(this).data('id'); 
-    console.log(status, applicationId)
-    $.ajax({
-        url: '{{ route("employer.applicant.status") }}',
-        method: 'POST',
-        data: { 
-            application_id: applicationId,
-            status: status
-        },
-        success: function (response) {
-            if (response.success) {
-                alert('Status updated successfully!');
-            } else {
-                alert('Failed to update status.');
-            }
-        },
-        error: function () {
-            alert('Something went wrong.');
-        }
-    });
-});
-
+        // Handle dropdown change
+        $(document).on('change', '.application-status', function() {
+            var status = $(this).val();
+            var applicationId = $(this).data('id');
+            console.log(status, applicationId)
+            $.ajax({
+                url: '{{ route('employer.applicant.status') }}',
+                method: 'POST',
+                data: {
+                    application_id: applicationId,
+                    status: status
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert('Status updated successfully!');
+                    } else {
+                        alert('Failed to update status.');
+                    }
+                },
+                error: function() {
+                    alert('Something went wrong.');
+                }
+            });
+        });
     </script>
 @endsection

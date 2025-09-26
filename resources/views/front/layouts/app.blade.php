@@ -16,6 +16,8 @@
     <link rel="shortcut icon" type="image/x-icon" href="#" />
     {{-- trumbowyg editor css --}}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Trumbowyg/2.27.3/ui/trumbowyg.min.css">
+    {{-- bootstrap icons --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     @yield('customCss')
 </head>
 
@@ -42,7 +44,7 @@
                     @if (Auth::check())
                         @if (Auth::user()->role == 'admin')
                             <a class="btn btn-outline-primary me-2" href="{{ route('admin.dashboard') }}"
-                                type="submit">Dashboard</a> 
+                                type="submit">Dashboard</a>
                         @endif
                     @endif
 
@@ -51,7 +53,7 @@
                     {{-- ----------------------- --}}
                     @if (Auth::check())
                         <!-- If User is Logged In -->
-                        <div class="dropdown">
+                        <div class="dropdown d-inline-block me-3">
                             <a class="btn btn-primary dropdown-toggle" href="#" role="button"
                                 data-bs-toggle="dropdown">
                                 {{ Auth::user()->name }}
@@ -60,10 +62,10 @@
                                 <li><a class="dropdown-item" href="{{ route('account.profile') }}">Profile</a></li>
                                 <li><a class="dropdown-item" href="{{ route('account.logout') }}">Logout</a></li>
                             </ul>
-                        </div>
-                    @else
-                        <!-- If Guest -->
-                        <a class="btn btn-primary" href="{{ route('account.login') }}">Login</a>
+                        </div> 
+                @else
+                    <!-- If Guest -->
+                    <a class="btn btn-primary" href="{{ route('account.login') }}">Login</a>
                     @endif
 
                     {{-- ----------------------- --}}
@@ -150,6 +152,9 @@
 
             })
         });
+
+
+
     </script>
     @yield('customJs')
 </body>

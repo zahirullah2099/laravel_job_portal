@@ -1,4 +1,4 @@
-<div class="card border-0 shadow mb-4 p-3">
+<div class="card shadow mb-4 p-3" style="border: 1px solid #A8DF8E">
     <div class="s-body text-center mt-3">
         
         @if (Auth::user()->image != '') 
@@ -13,7 +13,7 @@
         </div>
     </div>
 </div>
-<div class="card account-nav border-0 shadow mb-4 mb-lg-0">
+<div class="card account-nav shadow mb-4 mb-lg-0"  style="border: 1px solid #A8DF8E">
     <div class="card-body p-0">
         <ul class="list-group list-group-flush ">
             <li class="list-group-item d-flex justify-content-between p-3">

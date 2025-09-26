@@ -18,7 +18,7 @@
                 </div>
                 <div class="col-lg-9">
                     @include('front.layouts.message')
-                    <div class="card border-0 shadow mb-4 p-3">
+                    <div class="card shadow mb-4 p-3" style="border: 1px solid #A8DF8E">
                         <div class="card-body card-form">
                             <div class="d-flex justify-content-between">
                                 <div>
@@ -33,6 +33,7 @@
                                             <th scope="col">Title</th>
                                             <th scope="col">Applied Date</th>
                                             <th scope="col">Applicants</th>
+                                            <th scope="col">Posted By</th>
                                             <th scope="col">Status</th>
                                             <th scope="col">Action</th>
                                         </tr>
@@ -49,7 +50,11 @@
                                                     </td>
                                                     <td>{{ date_formated($jobApplication->applied_date) }}
                                                     </td>
-                                                    <td>{{ $jobApplication->job->applications->count() }} Applications</td>
+                                                    <td>{{ $jobApplication->job->applications->count() }} Applicant's</td>
+                                                    <td>
+                                                        {{ $jobApplication->job->user->name }}
+                                                        <div class="info1">{{ $jobApplication->job->user->email }}</div>
+                                                    </td>
                                                     <td>
                                                         @php
                                                             $status = $jobApplication->status;

@@ -66,7 +66,7 @@ class JobsController
     // Job detail page
     public function detail($id)
     {
-        $job = Job::where(['id' => $id, 'status' => 1])->with(['jobType', 'category'])->first();
+        $job = Job::where(['id' => $id])->with(['jobType', 'category'])->first();
         if ($job == null) {
             abort(404);
         }
@@ -212,6 +212,7 @@ class JobsController
                 'message' => $message
             ]);
         }
+       
 
         // check if user already saved the job
         $count = SavedJob::where([
@@ -227,16 +228,27 @@ class JobsController
             ]);
         }
 
-        // save the job
-        $saveJob = new SavedJob();
-        $saveJob->user_id = Auth::id();
-        $saveJob->job_id = $id;
-        $saveJob->save();
-        // session()->flash('success' , 'You have successfully saved the job');
-        $message = 'You have successfully saved the job';
-        return response()->json([
-            'status' => true,
-            'message' => $message
-        ]);
+         // check if user is saving their own job
+        if($job->user_id === Auth::id()){
+             $message = 'You Cant Save you own Job! sorry';
+            return response()->json([
+                'status' => false,
+                'message' => $message
+            ]);
+        }else{
+
+            // save the job
+            $saveJob = new SavedJob();
+            $saveJob->user_id = Auth::id();
+            $saveJob->job_id = $id;
+            $saveJob->save();
+            // session()->flash('success' , 'You have successfully saved the job');
+            $message = 'You have successfully saved the job';
+            return response()->json([
+                'status' => true,
+                'message' => $message
+            ]);
+        }
+
     }
 }

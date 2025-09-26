@@ -1,19 +1,20 @@
 <?php
 
 use App\Http\Middleware\checkAdmin;
-use App\Http\Middleware\AuthMiddleware;
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\AuthMiddleware;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\JobsController;
 use App\Http\Middleware\GuestMiddleware;
+use App\Http\Controllers\resumeController;
 use App\Http\Controllers\AccountController;
 use App\Http\Controllers\admin\JobController;
 use App\Http\Controllers\admin\UserController;
 use App\Http\Controllers\auth\GoogleController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\auth\facebookController;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\JobApplicationController;
-use App\Http\Controllers\auth\facebookController;
-use App\Http\Controllers\resumeController;
 
 Route::get('chatify/{id}', function () {
     return view('vendor.Chatify.pages.app');
@@ -47,7 +48,7 @@ Route::group(['prefix' => 'admin'], function () {
     });
 });
 
-
+// Register and login
 Route::group(['prefix' => 'account'], function () {
     Route::middleware(GuestMiddleware::class)->group(function () {
         Route::get('/register', [AccountController::class, 'registration'])->name('account.registration');
@@ -82,8 +83,7 @@ Route::group(['prefix' => 'account'], function () {
 
 
     });
-});
-
+}); 
 Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('redirect.google');
 Route::get('auth/google/callback', [GoogleController::class, 'hangleGoogleCallback']);
 

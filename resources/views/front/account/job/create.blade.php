@@ -22,7 +22,7 @@
                     @include('front.layouts.message')
                     <div id="responseMsg"></div>
                     <form action="" method="POST" id="createJobForm" name="createJobForm">
-                        <div class="card border-0 shadow mb-4 ">
+                        <div class="card shadow mb-4 " style="border: 1px solid #A8DF8E">
                             <div class="card-body card-form p-4">
                                 <h3 class="fs-4 mb-1">Post Job</h3>
                                 <div class="row">

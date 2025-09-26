@@ -66,7 +66,7 @@
             
                 <!-- Submit Button -->
                 <div class="text-center my-4">
-                    <button type="submit" class="btn btn-primary px-5">Submit Resume</button>
+                    <button type="submit" class="btn btn-primary px-5">Generate Resume</button>
                     {{-- <a href="{{ route('show.Resume') }}">submit resume</a> --}}
                 </div>
             </form>

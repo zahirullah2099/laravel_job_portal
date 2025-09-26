@@ -9,9 +9,10 @@ use App\Models\Category;
 use App\Models\SavedJob;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use App\Events\UserRegistered;
 use App\Models\JobApplication;
-use function Pest\Laravel\get;
 
+use function Pest\Laravel\get;
 use App\Mail\ResetPasswordEmail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -49,9 +50,12 @@ class AccountController
             $user->password = Hash::make($request->password);
             $user->save();
             session()->flash('success', 'you have registered successfully');
+            // fire event
+            event(new UserRegistered($user));
 
             return response()->json([
                 'status' => true,
+                'redirect' => route('account.login'),
                 'errors' => []
             ]);
         } else {
@@ -69,34 +73,33 @@ class AccountController
     }
 
 
-    // AUTHENTICATE USER
-   // AUTHENTICATE USER
-public function authenticate(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'email' => 'required|email',
-        'password' => 'required',
-    ]);
+    // AUTHENTICATE USER 
+    public function authenticate(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
 
-    if ($validator->passes()) {
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            $user = Auth::user();
-            
-            // Redirect based on role
-            if ($user->role === 'admin') {
-                return redirect()->route('admin.dashboard');
+        if ($validator->passes()) {
+            if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+                $user = Auth::user();
+
+                // Redirect based on role
+                if ($user->role === 'admin') {
+                    return redirect()->route('admin.dashboard');
+                } else {
+                    return redirect()->route('account.profile');
+                }
             } else {
-                return redirect()->route('account.profile');
+                return redirect()->route('account.login')->with('error', 'Either email/password is incorrect');
             }
         } else {
-            return redirect()->route('account.login')->with('error', 'Either email/password is incorrect');
+            return redirect()->route('account.login')
+                ->withErrors($validator)
+                ->withInput($request->only('email'));
         }
-    } else {
-        return redirect()->route('account.login')
-            ->withErrors($validator)
-            ->withInput($request->only('email'));
     }
-}
 
 
     // SHOW USER PROFILE
@@ -244,30 +247,35 @@ public function authenticate(Request $request)
     }
 
     // SHOW USER SAVED JOBS
-    public function savedJobs(){ 
+    public function savedJobs()
+    {
         $savedJobs = SavedJob::where('user_id', Auth::id())
-        ->with(['job','job.jobType', 'job.applications'])
-        ->orderBy('created_at', 'DESC')
-        ->paginate(10);
-        return view('front.account.job.saved-jobs',
-        ['savedJobs' => $savedJobs]);  
+            ->with(['job', 'job.jobType', 'job.applications'])
+            ->orderBy('created_at', 'DESC')
+            ->paginate(10);
+        return view(
+            'front.account.job.saved-jobs',
+            ['savedJobs' => $savedJobs]
+        );
     }
     // REMOVE SAVED JOB
-    public function removeSavedJob(Request $request){ 
+    public function removeSavedJob(Request $request)
+    {
         // checking the job belongs to the auth user or not
         $savedJob = SavedJob::where([
-                                'id' => $request->id, 
-                                'user_id' => Auth::id()])
-                                ->first(); 
-         if($savedJob == null){
+            'id' => $request->id,
+            'user_id' => Auth::id()
+        ])
+            ->first();
+        if ($savedJob == null) {
             session()->flash('error', 'Job not found');
             return response()->json([
                 'status' => false,
             ]);
-        }    
-        
+        }
+
         SavedJob::find($request->id)->delete();
-        session()->flash('success', 'Job removed successfully'); 
+        session()->flash('success', 'Job removed successfully');
         return response()->json([
             'status' => true,
         ]);
@@ -280,9 +288,9 @@ public function authenticate(Request $request)
         $employerId = Auth::id(); // Get the authenticated employer's ID
 
         $jobApplication = JobApplication::where('employer_id', $employerId)
-                        ->select('job_id', DB::raw('COUNT(*) as total_applicants'))
-                        ->groupBy('job_id')
-                        ->get(); 
+            ->select('job_id', DB::raw('COUNT(*) as total_applicants'))
+            ->groupBy('job_id')
+            ->get();
         return view('front.account.job.my-jobs', [
             'jobs' => $job,
             'jobApplication' => $jobApplication
@@ -382,18 +390,18 @@ public function authenticate(Request $request)
 
     // change applicant status
     public function updateApplicantStatus(Request $request)
-{
-    $application = JobApplication::find($request->application_id);
+    {
+        $application = JobApplication::find($request->application_id);
 
-    if ($application) {
-        $application->status = $request->status;
-        $application->save();
+        if ($application) {
+            $application->status = $request->status;
+            $application->save();
 
-        return response()->json(['success' => true]);
+            return response()->json(['success' => true]);
+        }
+
+        return response()->json(['success' => false]);
     }
-
-    return response()->json(['success' => false]);
-}
 
 
 
@@ -409,34 +417,37 @@ public function authenticate(Request $request)
     }
 
     // my job applications
-    public function myJobApplications(){
-        $jobApplications = JobApplication::where('user_id',Auth::id())
-        ->with(['job','job.jobType', 'job.applications'])
-        ->orderBy('created_at', 'DESC')
-        ->paginate(10); 
-        return view('front.account.job.my-job-application',['jobApplications' => $jobApplications]); 
+    public function myJobApplications()
+    {
+        $jobApplications = JobApplication::where('user_id', Auth::id())
+            ->with(['job', 'job.jobType', 'job.applications'])
+            ->orderBy('created_at', 'DESC')
+            ->paginate(10);
+        return view('front.account.job.my-job-application', ['jobApplications' => $jobApplications]);
     }
 
-    public function removeJobs(Request $request){ 
+    public function removeJobs(Request $request)
+    {
         // checking the job belongs to the auth user or not
         $jobApplication = JobApplication::where([
-                                'id' => $request->id, 
-                                'user_id' => Auth::id()])
-                                ->first(); 
-         if($jobApplication == null){
+            'id' => $request->id,
+            'user_id' => Auth::id()
+        ])
+            ->first();
+        if ($jobApplication == null) {
             session()->flash('error', 'Job application not found');
             return response()->json([
                 'status' => false,
             ]);
-        }    
-        
+        }
+
         JobApplication::find($request->id)->delete();
-        session()->flash('success', 'Job application removed successfully'); 
+        session()->flash('success', 'Job application removed successfully');
         return response()->json([
             'status' => true,
         ]);
     }
-   
+
     //  UPDATE PASSWORD
     // public function updatePassword(Request $request){
     //     $validator = Validator::make($request->all(),
@@ -469,31 +480,32 @@ public function authenticate(Request $request)
     //     }
     // }
 
-    public function updatePassword(Request $request){
+    public function updatePassword(Request $request)
+    {
         $validator = Validator::make($request->all(), [
             'old_password' => 'required',
             'new_password' => 'required|min:6',
             'confirm_password' => 'required|same:new_password',
         ]);
-    
+
         if ($validator->fails()) {
             return response()->json([
                 'status' => false,
                 'errors' => $validator->errors()
             ]);
         }
-    
+
         if (!Hash::check($request->old_password, Auth::user()->password)) {
             return response()->json([
                 'status' => false,
                 'errors' => ['old_password' => 'Your old password is incorrect.']
             ]);
         }
-    
+
         $user = User::find(Auth::id());
         $user->password = Hash::make($request->new_password);
         $user->save();
-    
+
         return response()->json([
             'status' => true,
             'message' => 'Your password has been updated successfully.'
@@ -502,19 +514,21 @@ public function authenticate(Request $request)
 
     // RESET PASSWORD IS STARTED FROM HERE
     // forgot password page
-    public function forgotPassword(){
+    public function forgotPassword()
+    {
         return view("front.account.forgot-password");
     }
 
     // process forgot password
-    public function processForgotPassword(Request $request){
-        $validator = Validator::make($request->all(),[
+    public function processForgotPassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
             'email' => 'required|email|exists:users,email'
         ]);
-        if($validator->fails()){
+        if ($validator->fails()) {
             return redirect()->route('account.forgotPassword')
-            ->withInput()
-            ->withErrors($validator);
+                ->withInput()
+                ->withErrors($validator);
         }
 
         $token = Str::random(60);
@@ -536,35 +550,36 @@ public function authenticate(Request $request)
         Mail::to($request->email)->send(new ResetPasswordEmail($mailData));
         return redirect()->route('account.forgotPassword')->with('success', 'Reset password email has been sent to you inbox.');
     }
-    
+
     // reset password
-    public function resetPassword($tokenString){
+    public function resetPassword($tokenString)
+    {
         $token = DB::table('password_reset_tokens')->where('token', $tokenString)->first();
-        if($token == null){
-            return redirect()->route('account.forgotPassword')->with('error', 'Invalid Token.'); 
+        if ($token == null) {
+            return redirect()->route('account.forgotPassword')->with('error', 'Invalid Token.');
         }
         return view('front.account.reset-password', ['tokenString' => $tokenString]);
     }
 
     // process reset password
-    public function ProcessResetPassword(Request $request){
+    public function ProcessResetPassword(Request $request)
+    {
         $token = DB::table('password_reset_tokens')->where('token', $request->token)->first();
-        if($token == null){
-            return redirect()->route('account.forgotPassword')->with('error', 'Invalid Token.'); 
+        if ($token == null) {
+            return redirect()->route('account.forgotPassword')->with('error', 'Invalid Token.');
         }
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
             'new_password' => 'required|min:5',
             'confirm_password' => 'required|same:new_password',
         ]);
-        if($validator->fails()){
-            return redirect()->route('account.resetPassword', $request->token) 
-            ->withErrors($validator);
+        if ($validator->fails()) {
+            return redirect()->route('account.resetPassword', $request->token)
+                ->withErrors($validator);
         }
         // update password
         User::where('email', $token->email)->update([
             'password' => Hash::make($request->new_password),
         ]);
-        return redirect()->route('account.login')->with('success','You have successfully changed password');
+        return redirect()->route('account.login')->with('success', 'You have successfully changed password');
     }
-    
 }

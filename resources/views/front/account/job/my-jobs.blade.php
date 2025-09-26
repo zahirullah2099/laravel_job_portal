@@ -18,7 +18,7 @@
                 </div>
                 <div class="col-lg-9">
                     @include('front.layouts.message')
-                    <div class="card border-0 shadow mb-4 p-3">
+                    <div class="card shadow mb-4 p-3" style="border: 1px solid #A8DF8E">
                         <div class="card-body card-form">
                             <div class="d-flex justify-content-between">
                                 <div>
